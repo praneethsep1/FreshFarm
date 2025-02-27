@@ -1,0 +1,2 @@
+/Users/ranjitha/AndroidStudioProjects/farmfresh/android/app/.cxx/Debug/12ce4h59/x86_64/CMakeFiles/edit_cache.dir
+/Users/ranjitha/AndroidStudioProjects/farmfresh/android/app/.cxx/Debug/12ce4h59/x86_64/CMakeFiles/rebuild_cache.dir
