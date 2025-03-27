@@ -1,0 +1,1 @@
+/Users/akash/AndroidStudioProjects/farmfresh/build/app/intermediates/cxx/Debug/6i2v501q/obj/arm64-v8a
