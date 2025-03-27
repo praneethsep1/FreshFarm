@@ -32,7 +32,7 @@ class WelcomeScreen extends StatelessWidget {
                 children: [
                   const Spacer(),
                   const Text(
-                    'Welcome to\nFreshNest',
+                    'Welcome to\nFarm Fresh',
                     style: TextStyle(
                       fontSize: 40,
                       fontWeight: FontWeight.bold,

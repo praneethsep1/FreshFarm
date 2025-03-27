@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'app_constants.dart';
 import 'authentication.dart';
 import 'cosumer/consumer_home_screen.dart';
 import 'farmer/farmer_home_screen.dart';
@@ -32,28 +33,43 @@ class _LoginScreenState extends State<LoginScreen> {
         isLoading = true;
       });
 
-      UserModel? user = await _auth.signIn(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-
-      setState(() {
-        isLoading = false;
-      });
-
-      if (user != null) {
-        // Navigate to appropriate home screen
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => user.userType == 'farmer'
-                ? const FarmerHomeScreen()
-                : const ConsumerHomeScreen(),
-          ),
-              (route) => false,
+      UserModel? user;
+      try {
+        user = await _auth.signIn(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
         );
-      } else {
-        // Show error message
+        setState(() {
+          isLoading = false;
+        });
+        if (user != null) {
+          // Navigate to appropriate home screen
+          if (mounted) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => user?.userType == UserType.farmer
+                    ? const FarmerHomeScreen()
+                    : const ConsumerHomeScreen(),
+              ),
+              (route) => false,
+            );
+          }
+        } else {
+          setState(() {
+            isLoading = false;
+          });
+          // Show error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Login failed. Please check your credentials.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } catch (e) {
+        setState(() {
+          isLoading = false;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Login failed. Please check your credentials.'),
