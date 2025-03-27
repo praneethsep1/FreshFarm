@@ -1,0 +1,2 @@
+D:/Downloads/CSDS493/farmfresh/farmfresh/android/app/.cxx/Debug/2u5o101c/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/Downloads/CSDS493/farmfresh/farmfresh/android/app/.cxx/Debug/2u5o101c/armeabi-v7a/CMakeFiles/rebuild_cache.dir
