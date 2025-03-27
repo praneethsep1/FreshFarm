@@ -1,2 +1,0 @@
-C:/Users/prane/AndroidStudioProjects/FreshFarm/android/app/.cxx/Debug/5a3h4x17/armeabi-v7a/CMakeFiles/edit_cache.dir
-C:/Users/prane/AndroidStudioProjects/FreshFarm/android/app/.cxx/Debug/5a3h4x17/armeabi-v7a/CMakeFiles/rebuild_cache.dir

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'app_constants.dart';
 import 'authentication.dart';
 import 'cosumer/consumer_home_screen.dart';
 import 'farmer/farmer_home_screen.dart';
@@ -14,10 +14,11 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
-  String selectedUserType = 'Consumer';
+  UserType selectedUserType = UserType.consumer;
   bool isLoading = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
-  // Form controllers
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
@@ -43,50 +44,55 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _register() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        isLoading = true;
-      });
-
-      UserModel? user = await _auth.signUp(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-        fullName: _fullNameController.text.trim(),
-        userType: selectedUserType.toLowerCase(),
-        phoneNumber: _phoneController.text.trim(),
-        address: selectedUserType == 'Consumer'
-            ? _addressController.text.trim()
-            : null,
-        farmName: selectedUserType == 'Farmer'
-            ? _farmNameController.text.trim()
-            : null,
-        farmLocation: selectedUserType == 'Farmer'
-            ? _farmLocationController.text.trim()
-            : null,
-      );
-
-      setState(() {
-        isLoading = false;
-      });
-
-      if (user != null) {
-        // Navigate to appropriate home screen
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => selectedUserType == 'Farmer'
-                ? const FarmerHomeScreen()
-                : const ConsumerHomeScreen(),
-          ),
-              (route) => false,
-        );
-      } else {
-        // Show error message
+      if (_passwordController.text != _confirmPasswordController.text) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Registration failed. Please try again.'),
+            content: Text('Passwords do not match'),
             backgroundColor: Colors.red,
           ),
         );
+        return;
+      }
+
+      setState(() => isLoading = true);
+
+      try {
+        UserModel? user = await _auth.signUp(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+          fullName: _fullNameController.text.trim(),
+          userType: selectedUserType,
+          phoneNumber: _phoneController.text.trim(),
+          address: selectedUserType == UserType.consumer
+              ? _addressController.text.trim()
+              : null,
+          farmName: selectedUserType == UserType.farmer
+              ? _farmNameController.text.trim()
+              : null,
+          farmLocation: selectedUserType == UserType.farmer
+              ? _farmLocationController.text.trim()
+              : null,
+        );
+
+        if (user != null && mounted) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => user.userType == UserType.farmer
+                  ? const FarmerHomeScreen()
+                  : const ConsumerHomeScreen(),
+            ),
+            (route) => false,
+          );
+        }
+      } on AuthException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.message),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        if (mounted) setState(() => isLoading = false);
       }
     }
   }
@@ -125,7 +131,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: Colors.grey,
                   ),
                 ),
-                const SizedBox(height: 48),
+                const SizedBox(height: 32),
+
                 // User Type Selection
                 Container(
                   padding: const EdgeInsets.all(4),
@@ -137,12 +144,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     children: [
                       Expanded(
                         child: GestureDetector(
-                          onTap: () =>
-                              setState(() => selectedUserType = 'Consumer'),
+                          onTap: () => setState(
+                              () => selectedUserType = UserType.consumer),
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             decoration: BoxDecoration(
-                              color: selectedUserType == 'Consumer'
+                              color: selectedUserType == UserType.consumer
                                   ? Colors.green
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(8),
@@ -151,7 +158,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               'Consumer',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: selectedUserType == 'Consumer'
+                                color: selectedUserType == UserType.consumer
                                     ? Colors.white
                                     : Colors.black,
                                 fontWeight: FontWeight.bold,
@@ -162,12 +169,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       Expanded(
                         child: GestureDetector(
-                          onTap: () =>
-                              setState(() => selectedUserType = 'Farmer'),
+                          onTap: () => setState(
+                              () => selectedUserType = UserType.farmer),
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             decoration: BoxDecoration(
-                              color: selectedUserType == 'Farmer'
+                              color: selectedUserType == UserType.farmer
                                   ? Colors.green
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(8),
@@ -176,7 +183,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               'Farmer',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: selectedUserType == 'Farmer'
+                                color: selectedUserType == UserType.farmer
                                     ? Colors.white
                                     : Colors.black,
                                 fontWeight: FontWeight.bold,
@@ -189,7 +196,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                TextField(
+
+                // Full Name
+                TextFormField(
                   controller: _fullNameController,
                   decoration: InputDecoration(
                     labelText: 'Full Name',
@@ -198,10 +207,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty)
+                      return 'Please enter your full name';
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
-                TextField(
+
+                // Email
+                TextFormField(
                   controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     labelText: 'Email',
                     prefixIcon: const Icon(Icons.email_outlined),
@@ -209,10 +226,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty)
+                      return 'Please enter your email';
+                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                        .hasMatch(value)) {
+                      return 'Please enter a valid email';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
-                TextField(
+
+                // Phone Number
+                TextFormField(
                   controller: _phoneController,
+                  keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
                     labelText: 'Phone Number',
                     prefixIcon: const Icon(Icons.phone_outlined),
@@ -220,35 +249,63 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty)
+                      return 'Please enter phone number';
+                    if (!RegExp(r'^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$')
+                        .hasMatch(value)) return 'Invalid phone number format';
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
-                // Conditional fields based on user type
-                if (selectedUserType == 'Farmer') ...[
-                  TextField(
-                    controller: _farmNameController,
+
+                // Conditional Fields
+                if (selectedUserType == UserType.farmer) ...[
+                  InputDecorator(
                     decoration: InputDecoration(
-                      labelText: 'Farm Name',
-                      prefixIcon: const Icon(Icons.business_outlined),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                      label: const Text('Farm Details'),
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.all(16),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _farmLocationController,
-                    decoration: InputDecoration(
-                      labelText: 'Farm Location',
-                      prefixIcon: const Icon(Icons.location_on_outlined),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: _farmNameController,
+                          decoration: const InputDecoration(
+                            labelText: 'Farm Name',
+                            prefixIcon: Icon(Icons.business_outlined),
+                          ),
+                          validator: (value) {
+                            if (selectedUserType == UserType.farmer &&
+                                (value == null || value.isEmpty)) {
+                              return 'Farm name is required';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _farmLocationController,
+                          decoration: const InputDecoration(
+                            labelText: 'Farm Location',
+                            prefixIcon: Icon(Icons.location_on_outlined),
+                          ),
+                          validator: (value) {
+                            if (selectedUserType == UserType.farmer &&
+                                (value == null || value.isEmpty)) {
+                              return 'Farm location is required';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 16),
                 ],
-                if (selectedUserType == 'Consumer') ...[
-                  TextField(
+
+                if (selectedUserType == UserType.consumer)
+                  TextFormField(
                     controller: _addressController,
                     decoration: InputDecoration(
                       labelText: 'Delivery Address',
@@ -257,33 +314,72 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
+                    validator: (value) {
+                      if (selectedUserType == UserType.consumer &&
+                          (value == null || value.isEmpty)) {
+                        return 'Delivery address is required';
+                      }
+                      return null;
+                    },
                   ),
-                  const SizedBox(height: 16),
-                ],
-                TextField(
+                const SizedBox(height: 16),
+
+                // Password
+                TextFormField(
                   controller: _passwordController,
-                  obscureText: true,
+                  obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     labelText: 'Password',
                     prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility),
+                      onPressed: () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty)
+                      return 'Password is required';
+                    if (value.length < 6) return 'Minimum 6 characters';
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
-                TextField(
+
+                // Confirm Password
+                TextFormField(
                   controller: _confirmPasswordController,
-                  obscureText: true,
+                  obscureText: _obscureConfirmPassword,
                   decoration: InputDecoration(
                     labelText: 'Confirm Password',
                     prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscureConfirmPassword
+                          ? Icons.visibility_off
+                          : Icons.visibility),
+                      onPressed: () => setState(() =>
+                          _obscureConfirmPassword = !_obscureConfirmPassword),
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty)
+                      return 'Please confirm password';
+                    if (value != _passwordController.text)
+                      return 'Passwords don\'t match';
+                    return null;
+                  },
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
+
+                // Register Button
                 ElevatedButton(
                   onPressed: isLoading ? null : _register,
                   style: ElevatedButton.styleFrom(
@@ -293,13 +389,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'Create Account',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(
+                          'Create Account',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ],
             ),
