@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="farmfresh API docs, for the Dart programming language.">
+  <title>farmfresh - Dart API docs</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="static-assets/github.css?v1">
+  <link rel="stylesheet" href="static-assets/styles.css?v1">
+  <link rel="icon" href="static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li class="self-crumb">farmfresh package</li>
+  </ol>
+  <div class="self-name">farmfresh</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+  <div id="dartdoc-main-content" class="main-content">
+      
+<section class="desc markdown">
+  <h1 id="farmfresh">FarmFresh</h1>
+<h2 id="project-description">Project Description</h2>
+<p>FarmFresh is a Flutter-based mobile application that connects farmers directly with consumers to facilitate the purchase of fresh vegetables and farm products. The app enables farmers to list and manage their products and orders, while consumers can browse products, add them to a cart, place orders, and track order history. It is designed for:</p>
+<ul>
+<li><strong>Consumers</strong>: Individuals seeking fresh, locally sourced produce with a user-friendly shopping experience.</li>
+<li><strong>Farmers</strong>: Small-scale farmers looking to sell directly to consumers without intermediaries.</li>
+</ul>
+<p>The app leverages Firebase for authentication, Firestore for data storage, and Firebase Storage for product images, ensuring a scalable and secure platform.</p>
+<h2 id="architecture">Architecture</h2>
+<p>FarmFresh follows a client-server architecture with Flutter as the front-end and Firebase as the back-end. The high-level architecture consists of:</p>
+<ul>
+<li>
+<p><strong>Client (Flutter App)</strong>:</p>
+<ul>
+<li><strong>UI Layer</strong>: Widgets for screens like <code>ConsumerHomeScreen</code>, <code>PlaceOrderScreen</code>, and <code>FarmerOrderManagement</code>, built with Flutter’s Material Design.</li>
+<li><strong>Business Logic</strong>: Services like <code>AuthService</code>, <code>ProductRepository</code>, and <code>CartService</code> handle authentication, product management, and cart operations.</li>
+<li><strong>Data Layer</strong>: Interacts with Firebase SDKs for authentication, Firestore, and Storage.</li>
+</ul>
+</li>
+<li>
+<p><strong>Server (Firebase)</strong>:</p>
+<ul>
+<li><strong>Firebase Authentication</strong>: Manages user sign-up, sign-in, and sign-out.</li>
+<li><strong>Firestore</strong>: Stores user profiles, products, cart items, and orders.</li>
+<li><strong>Firebase Storage</strong>: Hosts product images.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Architecture Diagram</strong>:</p>
+<p><img src="docs/architecture_diagram.png" alt="FarmFresh Architecture"></p>
+<p><em>Note</em>: The UML diagram is stored in <code>docs/architecture_diagram.png</code>. It illustrates the app’s components, including UI screens, services, and Firebase interactions. <code>Replace with actual diagram in your repo.</code></p>
+<h2 id="getting-started--installation">Getting Started / Installation</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li><strong>Flutter</strong>: Version 3.16.0 or higher (stable channel).</li>
+<li><strong>Dart</strong>: Version 3.2.0 or higher (included with Flutter).</li>
+<li><strong>Firebase Account</strong>: For Authentication, Firestore, and Storage.</li>
+<li><strong>IDE</strong>: Android Studio, VS Code, or any IDE with Flutter support.</li>
+<li><strong>Emulator/Device</strong>: Android/iOS emulator or physical device.</li>
+<li><strong>Python</strong>: For Sphinx documentation (optional for docs generation).</li>
+</ul>
+<h3 id="setup-steps">Setup Steps</h3>
+<ol>
+<li>
+<p><strong>Clone the Repository</strong>:</p>
+<pre class="language-bash"><code class="language-bash">git clone https://github.com/your-username/farmfresh.git
+cd farmfresh
+</code></pre>
+</li>
+<li>
+<p><strong>Install Dependencies</strong>:</p>
+<pre class="language-bash"><code class="language-bash">flutter pub get
+</code></pre>
+</li>
+<li>
+<p><strong>Configure Firebase</strong>:</p>
+<ul>
+<li>Create a Firebase project in the <a href="https://console.firebase.google.com/">Firebase Console</a>.</li>
+<li>Enable Email/Password Authentication, Firestore, and Storage.</li>
+<li>Install the Firebase CLI:
+<pre class="language-bash"><code class="language-bash">npm install -g firebase-tools
+</code></pre>
+</li>
+<li>Run FlutterFire CLI to configure:
+<pre class="language-bash"><code class="language-bash">flutterfire configure
+</code></pre>
+Select your Firebase project to generate <code>lib/firebase_options.dart</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Update Firestore Rules</strong>:
+In the Firebase Console, set Firestore rules:</p>
+<pre class="language-firestore"><code class="language-firestore">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Update Storage Rules</strong>:
+In the Firebase Console, set Storage rules:</p>
+<pre class="language-firestore"><code class="language-firestore">rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Set Up Emulator (Optional)</strong>:</p>
+<ul>
+<li>Android: Configure an Android Virtual Device (AVD) in Android Studio.</li>
+<li>iOS: Set up an iOS simulator in Xcode (macOS only).</li>
+<li>Alternatively, connect a physical device with USB debugging enabled.</li>
+</ul>
+</li>
+</ol>
+<h2 id="usage--examples">Usage / Examples</h2>
+<p>FarmFresh is designed for non-technical users (consumers and farmers). Below are examples of how to use the app:</p>
+<h3 id="for-consumers">For Consumers</h3>
+<ol>
+<li><strong>Register</strong>: Open the app, go to the Register screen, select "Consumer," and enter your name, email, phone, address, and password.</li>
+<li><strong>Browse Products</strong>: On the Home screen, view available vegetables (e.g., "Apples, ₹10/kg"). Tap a product to see details.</li>
+<li><strong>Add to Cart</strong>: Click "Add to Cart" on a product. Adjust quantity in the Cart screen.</li>
+<li><strong>Place Order</strong>: Go to the Cart, tap "Proceed to Checkout," enter shipping details (e.g., "123 Test St, Test City"), select payment (e.g., Cash on Delivery), and confirm.</li>
+<li><strong>View Orders</strong>: Check past orders in the Order History screen, including status (e.g., "Shipped") and delivery details.</li>
+<li><strong>Update Profile</strong>: Edit your name, phone, or address in the Profile screen.</li>
+</ol>
+<h3 id="for-farmers">For Farmers</h3>
+<ol>
+<li><strong>Register</strong>: On the Register screen, select "Farmer," and enter your name, email, phone, farm name, and farm location.</li>
+<li><strong>Add Products</strong>: In the Product Management screen, click "Add New Product," enter details (e.g., "Tomatoes, ₹15/kg, 100kg"), upload images, and save.</li>
+<li><strong>Manage Orders</strong>: In the Order Management screen, view incoming orders, update status (e.g., from "Pending" to "Shipped"), and add tracking details.</li>
+<li><strong>Update Profile</strong>: Edit farm details in the Profile screen.</li>
+</ol>
+<h2 id="folder-structure-overview">Folder Structure Overview</h2>
+<pre class="language-dart"><code>farmfresh/
+├── docs/                     # Documentation files (using dart doc)
+│   ├── api/                  # Generated HTML documentation
+│       ├── index.html        # Generated HTML documentation
+├── lib/                      # Source code
+│   ├── add_product_screen.dart        # Farmer product addition screen
+│   ├── authentication.dart            # Authentication and product services
+│   ├── consumer_cart_screen.dart      # Consumer cart management
+│   ├── consumer_home_screen.dart      # Consumer product browsing
+│   ├── consumer_order_history_screen.dart # Consumer order history
+│   ├── consumer_product_listing.dart  # Product list widget
+│   ├── consumer_profile_screen.dart   # Consumer profile management
+│   ├── farmer_order_management.dart   # Farmer order management
+│   ├── farmer_product_management.dart # Farmer product management
+│   ├── farmer_profile_screen.dart     # Farmer profile management
+│   ├── login_screen.dart              # Login screen
+│   ├── models.dart                    # Data models (UserModel, Product, CartItem)
+│   ├── place_order_screen.dart        # Order placement screen
+│   ├── product_detail_screen.dart     # Product details view
+│   ├── register_screen.dart           # Registration screen
+│   ├── app_constants.dart             # App-wide constants
+│   └── firebase_options.dart          # Firebase configuration
+├── test/                     # Unit and widget tests
+│   ├── ui_test.dart              # UI widget tests for all features
+├── pubspec.yaml              # Project dependencies and configuration
+├── README.md                 # Project documentation (this file)
+└── testing.md                # Test coverage and details
+</code></pre>
+<h2 id="tech-stack--dependencies">Tech Stack / Dependencies</h2>
+<ul>
+<li><strong>Flutter</strong>: Framework for cross-platform mobile app development (iOS, Android).</li>
+<li><strong>Dart</strong>: Programming language for Flutter.</li>
+<li><strong>Firebase</strong>:
+<ul>
+<li><strong>Firebase Authentication</strong>: Email/password-based user authentication.</li>
+<li><strong>Firestore</strong>: NoSQL database for storing users, products, carts, and orders.</li>
+<li><strong>Firebase Storage</strong>: Cloud storage for product images.</li>
+</ul>
+</li>
+<li><strong>Provider</strong>: State management for dependency injection and UI updates.</li>
+<li><strong>Image Picker</strong>: For uploading product images from device gallery or camera.</li>
+<li><strong>UUID</strong>: For generating unique IDs for orders and products.</li>
+<li><strong>Testing</strong>:
+<ul>
+<li><strong>flutter_test</strong>: Flutter’s testing framework for unit and widget tests.</li>
+<li><strong>Mockito</strong>: Mocking library for isolating dependencies in tests.</li>
+<li><strong>Build Runner</strong>: For generating mock classes.</li>
+</ul>
+</li>
+<li><strong>Documentation</strong>:
+<ul>
+<li><strong>dartdoc</strong>: Generates API documentation from Dart docstrings.</li>
+<li><strong>Sphinx</strong>: Generates HTML documentation site with README and API docs.</li>
+</ul>
+</li>
+</ul>
+<p><strong>pubspec.yaml Dependencies</strong>:</p>
+<pre class="language-yaml"><code class="language-yaml">dependencies:
+  flutter:
+    sdk: flutter
+  firebase_core: ^2.24.0
+  firebase_auth: ^4.15.0
+  cloud_firestore: ^4.13.0
+  firebase_storage: ^11.5.0
+  provider: ^6.0.5
+  image_picker: ^1.0.4
+  uuid: ^4.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mockito: ^5.4.2
+  build_runner: ^2.4.6
+  dartdoc: ^6.3.0
+</code></pre>
+<h2 id="contribution">Contribution</h2>
+<p>The FarmFresh project was developed by the following team members (replace with actual names and roles):</p>
+<ul>
+<li><strong><code>Your Name</code></strong> (Design Lead): Designed UI/UX, implemented consumer-facing screens (<code>ConsumerHomeScreen</code>, <code>PlaceOrderScreen</code>), and created architecture diagrams.</li>
+<li><strong><code>Team Member 2</code></strong> (Test Lead): Wrote UI widget tests (<code>ui_test.dart</code>), ensured test coverage, and set up <code>testing.md</code>.</li>
+<li><strong><code>Team Member 3</code></strong> (Backend Lead): Implemented Firebase integration (<code>AuthService</code>, <code>ProductRepository</code>) and Firestore/Storage logic.</li>
+<li><strong><code>Team Member 4</code></strong> (Documentation Lead): Added Google-style docstrings, set up Sphinx documentation, and wrote README.</li>
+</ul>
+<p>Contributions are tracked via Git commits. Each member focused on specific modules, with collaborative code reviews to ensure quality.</p>
+<h2 id="development-retrospective">Development Retrospective</h2>
+<h3 id="mistakes-and-lessons-learned">Mistakes and Lessons Learned</h3>
+<ul>
+<li><strong>Firebase Configuration Delays</strong>: Initial misconfiguration of Firestore rules caused access issues. We learned to test Firebase setup early and document rules clearly.</li>
+<li><strong>Test Coverage Gaps</strong>: Early tests focused on logic but missed UI validation. Adding <code>ui_test.dart</code> later increased effort. Future projects should prioritize UI tests from the start.</li>
+<li><strong>Scope Creep</strong>: Adding features like image uploads stretched timelines. Better initial scoping and prioritization would have saved time.</li>
+<li><strong>Documentation Overhead</strong>: Docstrings and Sphinx setup were added late, causing a rush. Integrating documentation incrementally would be more efficient.</li>
+</ul>
+<h3 id="process-improvements">Process Improvements</h3>
+<ul>
+<li><strong>Agile Iterations</strong>: Use shorter sprints (1-2 weeks) with clear deliverables to catch issues early.</li>
+<li><strong>Automated CI/CD</strong>: Set up GitHub Actions for automated testing and linting to reduce manual checks.</li>
+<li><strong>Early Documentation</strong>: Write docstrings during development and generate Sphinx docs in each sprint.</li>
+<li><strong>Pair Programming</strong>: Pair on complex features (e.g., Firebase integration) to reduce bugs and knowledge silos.</li>
+</ul>
+<h2 id="license">License</h2>
+<p>This project is licensed under the MIT License. See the <a href="LICENSE">LICENSE</a> file for details.</p>
+<p><em>Note</em>: A placeholder LICENSE file is included. Update with specific terms if needed.</p>
+<h2 id="testing">Testing</h2>
+<p>FarmFresh includes comprehensive UI widget tests in <code>test/ui_test.dart</code>, covering all major features:</p>
+<ul>
+<li><strong>Consumer Features</strong>: Product browsing (<code>ConsumerHomeScreen</code>), cart management (<code>ConsumerCartScreen</code>), order placement (<code>PlaceOrderScreen</code>), order history (<code>ConsumerOrderHistoryScreen</code>), and profile updates (<code>ConsumerProfileScreen</code>).</li>
+<li><strong>Farmer Features</strong>: Product management (<code>AddProductScreen</code>, <code>FarmerProductManagement</code>), order management (<code>FarmerOrderManagement</code>), and profile updates (<code>FarmerProfileScreen</code>).</li>
+<li><strong>Authentication</strong>: Login (<code>LoginScreen</code>) and registration (<code>RegisterScreen</code>).</li>
+</ul>
+<h3 id="test-details">Test Details</h3>
+<ul>
+<li><strong>Location</strong>: <code>test/ui_test.dart</code></li>
+<li><strong>Coverage</strong>: Tests verify UI rendering, form validation, and user interactions (e.g., button taps, dropdown selections) for all screens. Mockito mocks Firebase dependencies to isolate UI behavior.</li>
+<li><strong>Running Tests</strong>:
+<pre class="language-bash"><code class="language-bash">flutter pub run build_runner build --delete-conflicting-outputs
+flutter test test/ui_test.dart
+</code></pre>
+</li>
+<li><strong>Coverage Report</strong>:
+<pre class="language-bash"><code class="language-bash">flutter test --coverage
+genhtml coverage/lcov.info -o coverage/html
+open coverage/html/index.html
+</code></pre>
+</li>
+</ul>
+<p>See <code>testing.md</code> in the repository root for detailed test coverage and explanations.</p>
+<h2 id="documentation">Documentation</h2>
+<p>The project includes full source code documentation:</p>
+<ul>
+<li><strong>Docstrings</strong>: All functions, classes, modules, and tests use Google-style docstrings (e.g., <code>authentication.dart</code>, <code>place_order_screen.dart</code>, <code>ui_test.dart</code>).</li>
+<li><strong>Automated Documentation</strong>:
+<ul>
+<li><strong>dartdoc</strong>: Generates API documentation from Dart docstrings:
+<pre class="language-bash"><code class="language-bash">dart doc
+</code></pre>
+Output: <code>doc/api/</code></li>
+<li><strong>Sphinx</strong>: Generates an HTML documentation site combining API docs, README, and architecture details:
+<pre class="language-bash"><code class="language-bash">cd docs
+pip install -r requirements.txt
+make html
+</code></pre>
+Output: <code>docs/_build/html/index.html</code></li>
+</ul>
+</li>
+</ul>
+<p>The <code>docs/</code> directory contains Sphinx configuration (<code>conf.py</code>, <code>index.rst</code>) and requirements (<code>requirements.txt</code>).</p>
+</section>
+
+
+      <section class="summary">
+          <h2>Libraries</h2>
+        <dl>
+          <dt id="app_constants">
+  <span class="name"><a href="app_constants">app_constants</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="authentication">
+  <span class="name"><a href="authentication">authentication</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="consumer_cart_screen">
+  <span class="name"><a href="cosumer_consumer_cart_screen">cosumer\consumer_cart_screen</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="consumer_home_screen">
+  <span class="name"><a href="cosumer_consumer_home_screen">cosumer\consumer_home_screen</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="consumer_order_history_screen">
+  <span class="name"><a href="cosumer_consumer_order_history_screen">cosumer\consumer_order_history_screen</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="consumer_product_listing">
+  <span class="name"><a href="cosumer_consumer_product_listing">cosumer\consumer_product_listing</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="consumer_profile_screen">
+  <span class="name"><a href="cosumer_consumer_profile_screen">cosumer\consumer_profile_screen</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="place_order_screen">
+  <span class="name"><a href="cosumer_place_order_screen">cosumer\place_order_screen</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="product_detail_screen">
+  <span class="name"><a href="cosumer_product_detail_screen">cosumer\product_detail_screen</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="add_product_screen">
+  <span class="name"><a href="farmer_add_product_screen">farmer\add_product_screen</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="farmer_home_screen">
+  <span class="name"><a href="farmer_farmer_home_screen">farmer\farmer_home_screen</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="farmer_order_management">
+  <span class="name"><a href="farmer_farmer_order_management">farmer\farmer_order_management</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="farmer_product_management">
+  <span class="name"><a href="farmer_farmer_product_management">farmer\farmer_product_management</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="farmer_profile_screen">
+  <span class="name"><a href="farmer_farmer_profile_screen">farmer\farmer_profile_screen</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="farmer_sales_analytics">
+  <span class="name"><a href="farmer_farmer_sales_analytics">farmer\farmer_sales_analytics</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="firebase_options">
+  <span class="name"><a href="firebase_options">firebase_options</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="help_screen">
+  <span class="name"><a href="help_screen">help_screen</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="login_screen">
+  <span class="name"><a href="login_screen">login_screen</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="main">
+  <span class="name"><a href="main">main</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="models">
+  <span class="name"><a href="models">models</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="notification_service">
+  <span class="name"><a href="notification_service">notification_service</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="register_screen">
+  <span class="name"><a href="register_screen">register_screen</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="splashscreen">
+  <span class="name"><a href="splashscreen">splashscreen</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="welcome_screen">
+  <span class="name"><a href="welcome_screen">welcome_screen</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+        </dl>
+      </section>
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li class="self-crumb">farmfresh package</li>
+</ol>
+
+    <h5 class="hidden-xs"><span class="package-name">farmfresh</span> <span class="package-kind">package</span></h5>
+    <ol>
+      <li class="section-title">Libraries</li>
+      <li><a href="app_constants">app_constants</a></li>
+      <li><a href="authentication">authentication</a></li>
+      <li><a href="cosumer_consumer_cart_screen">cosumer\consumer_cart_screen</a></li>
+      <li><a href="cosumer_consumer_home_screen">cosumer\consumer_home_screen</a></li>
+      <li><a href="cosumer_consumer_order_history_screen">cosumer\consumer_order_history_screen</a></li>
+      <li><a href="cosumer_consumer_product_listing">cosumer\consumer_product_listing</a></li>
+      <li><a href="cosumer_consumer_profile_screen">cosumer\consumer_profile_screen</a></li>
+      <li><a href="cosumer_place_order_screen">cosumer\place_order_screen</a></li>
+      <li><a href="cosumer_product_detail_screen">cosumer\product_detail_screen</a></li>
+      <li><a href="farmer_add_product_screen">farmer\add_product_screen</a></li>
+      <li><a href="farmer_farmer_home_screen">farmer\farmer_home_screen</a></li>
+      <li><a href="farmer_farmer_order_management">farmer\farmer_order_management</a></li>
+      <li><a href="farmer_farmer_product_management">farmer\farmer_product_management</a></li>
+      <li><a href="farmer_farmer_profile_screen">farmer\farmer_profile_screen</a></li>
+      <li><a href="farmer_farmer_sales_analytics">farmer\farmer_sales_analytics</a></li>
+      <li><a href="firebase_options">firebase_options</a></li>
+      <li><a href="help_screen">help_screen</a></li>
+      <li><a href="login_screen">login_screen</a></li>
+      <li><a href="main">main</a></li>
+      <li><a href="models">models</a></li>
+      <li><a href="notification_service">notification_service</a></li>
+      <li><a href="register_screen">register_screen</a></li>
+      <li><a href="splashscreen">splashscreen</a></li>
+      <li><a href="welcome_screen">welcome_screen</a></li>
+</ol>
+
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div>
+</main>
+<footer>
+  <span class="no-break">
+    farmfresh
+      1.0.0+1
+  </span>
+  
+</footer>
+
+
+<script src="static-assets/highlight.pack.js?v1"></script>
+<script src="static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+
