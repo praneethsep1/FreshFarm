@@ -4,6 +4,11 @@ import 'authentication.dart';
 import 'cosumer/consumer_home_screen.dart';
 import 'farmer/farmer_home_screen.dart';
 
+/// A stateful widget that provides the registration interface for users.
+///
+/// Allows users to sign up as a farmer or consumer by entering their details and
+/// navigating to the appropriate home screen upon successful registration.
+
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -11,14 +16,30 @@ class RegisterScreen extends StatefulWidget {
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
+/// The state class for [RegisterScreen].
+///
+/// Manages the registration form, user input validation, user type selection,
+/// and the sign-up process using [AuthService].
+
 class _RegisterScreenState extends State<RegisterScreen> {
+
+  /// The [AuthService] instance for handling user registration.
   final AuthService _auth = AuthService();
+
+  /// The key for the registration form to manage validation.
   final _formKey = GlobalKey<FormState>();
+
+  /// The selected user type (farmer or consumer) for registration.
   UserType selectedUserType = UserType.consumer;
+
+  /// Indicates whether a registration operation is in progress.
   bool isLoading = false;
+
+  /// Controls the visibility of the password and confirm password fields.
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
+  /// Text controllers for the registration form input fields.
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
@@ -28,6 +49,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _farmNameController = TextEditingController();
   final TextEditingController _farmLocationController = TextEditingController();
+
+  /// Disposes of text controllers to free up resources.
+  ///
+  /// Called when the widget is removed from the widget tree.
 
   @override
   void dispose() {
@@ -41,6 +66,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _farmLocationController.dispose();
     super.dispose();
   }
+
+  /// Handles the registration process by validating the form and signing up the user.
+  ///
+  /// Validates the form, checks password confirmation, calls [AuthService.signUp],
+  /// and navigates to the appropriate home screen based on user type. Displays errors
+  /// if registration fails.
+  ///
+  /// Returns:
+  ///   A [Future<void>] that completes when the registration process is finished.
 
   Future<void> _register() async {
     if (_formKey.currentState!.validate()) {
@@ -96,6 +130,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }
     }
   }
+
+  /// Builds the UI for the registration screen.
+  ///
+  /// Displays a form with fields for user details, user type selection, and conditional
+  /// fields for farmers or consumers, along with a registration button.
+  ///
+  /// Parameters:
+  ///   - context: The [BuildContext] for building the widget.
+  ///
+  /// Returns:
+  ///   A [Widget] representing the registration screen UI.
 
   @override
   Widget build(BuildContext context) {

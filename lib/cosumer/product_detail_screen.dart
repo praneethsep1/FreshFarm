@@ -5,6 +5,14 @@ import '../models.dart';
 import '../authentication.dart';
 import 'consumer_cart_screen.dart';
 
+/// A stateful widget that displays detailed information about a product.
+///
+/// Shows product images, name, price, description, and quantity selector. Allows
+/// users to add the product to their cart using [CartService].
+///
+/// Parameters:
+///   - product: The [Product] object containing details to display.
+
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
 
@@ -14,8 +22,18 @@ class ProductDetailScreen extends StatefulWidget {
   _ProductDetailScreenState createState() => _ProductDetailScreenState();
 }
 
+/// The state class for [ProductDetailScreen].
+///
+/// Manages the state of the quantity selector and handles adding the product to
+/// the cart using [CartService]. Updates the UI based on user interactions.
+
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int _quantity = 1;
+
+  /// Increments the selected quantity if within available stock.
+  ///
+  /// Updates [_quantity] and triggers a UI refresh, ensuring the quantity does not
+  /// exceed the product's available stock.
 
   void _incrementQuantity() {
     setState(() {
@@ -25,6 +43,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     });
   }
 
+  /// Decrements the selected quantity if above the minimum.
+  ///
+  /// Updates [_quantity] and triggers a UI refresh, ensuring the quantity does not
+  /// go below 1.
+
   void _decrementQuantity() {
     setState(() {
       if (_quantity > 1) {
@@ -32,6 +55,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       }
     });
   }
+
+  /// Adds the selected product and quantity to the user's cart.
+  ///
+  /// Creates a [CartItem] and uses [CartService] to add it to the cart. Displays
+  /// a snackbar to confirm success or report errors, with an option to view the cart.
+  ///
+  /// Parameters:
+  ///   - context: The [BuildContext] for accessing providers and navigation.
 
   void _addToCart(BuildContext context) async {
     final authService = Provider.of<AuthService>(context, listen: false);
@@ -76,6 +107,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       );
     }
   }
+
+  /// Builds the UI for the product detail screen.
+  ///
+  /// Displays a carousel of product images, name, price, description, available
+  /// quantity, and a quantity selector. Includes a button to add the product to the cart.
+  ///
+  /// Parameters:
+  ///   - context: The [BuildContext] for building the widget.
+  ///
+  /// Returns:
+  ///   A [Widget] representing the product detail screen UI.
 
   @override
   Widget build(BuildContext context) {
@@ -200,6 +242,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
                     ),

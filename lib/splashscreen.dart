@@ -4,6 +4,11 @@ import 'package:flutter_svg/svg.dart';
 
 import 'main.dart';
 
+/// A stateful widget that displays the app's splash screen.
+///
+/// Shows a logo and app branding for a brief duration before navigating to the
+/// [WelcomeScreen].
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -11,7 +16,16 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
+/// The state class for [SplashScreen].
+///
+/// Manages the splash screen's initialization and navigation to the [WelcomeScreen]
+/// after a delay.
+
 class _SplashScreenState extends State<SplashScreen> {
+
+  /// Initializes the splash screen and schedules navigation to [WelcomeScreen].
+  ///
+  /// Sets a 3-second delay before replacing the current route with [WelcomeScreen].
   @override
   void initState() {
     super.initState();
@@ -22,6 +36,17 @@ class _SplashScreenState extends State<SplashScreen> {
       );
     });
   }
+
+  /// Builds the UI for the splash screen.
+  ///
+  /// Displays a gradient background with the app's logo, name, and tagline centered
+  /// on the screen.
+  ///
+  /// Parameters:
+  ///   - context: The [BuildContext] for building the widget.
+  ///
+  /// Returns:
+  ///   A [Widget] representing the splash screen UI.
 
   @override
   Widget build(BuildContext context) {

@@ -4,6 +4,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models.dart';
 import '../authentication.dart';
+import 'consumer_home_screen.dart';
+
+/// A stateful widget that handles the order placement process.
+///
+/// Displays a form for entering shipping details, selecting delivery options, and
+/// choosing a payment method. Submits the order to Firestore and updates product
+/// quantities.
+///
+/// Parameters:
+///   - cartItems: The list of [CartItem] objects to be ordered.
+///   - total: The total price of the cart items.
 
 class PlaceOrderScreen extends StatefulWidget {
   final List<CartItem> cartItems;
@@ -16,8 +27,15 @@ class PlaceOrderScreen extends StatefulWidget {
   _PlaceOrderScreenState createState() => _PlaceOrderScreenState();
 }
 
+/// The state class for [PlaceOrderScreen].
+///
+/// Manages the state of the order form, including shipping details, payment methods,
+/// and credit card information. Handles order submission, product quantity updates,
+/// and cart clearing.
+
 class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _creditCardFormKey = GlobalKey<FormState>(); // For credit card form
 
   // Shipping Details Controllers
   final TextEditingController _nameController = TextEditingController();
@@ -25,6 +43,12 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _pinCodeController = TextEditingController();
+
+  // Credit Card Controllers
+  final TextEditingController _cardNumberController = TextEditingController();
+  final TextEditingController _expiryDateController = TextEditingController();
+  final TextEditingController _cvvController = TextEditingController();
+  final TextEditingController _cardHolderController = TextEditingController();
 
   // Delivery Options
   String _selectedDeliveryOption = 'Standard Delivery';
@@ -37,8 +61,14 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
   String _selectedPaymentMethod = 'Cash on Delivery';
   final List<String> _paymentMethods = [
     'Cash on Delivery',
-    'Online Payment',
+    'Credit Card',
   ];
+
+  bool _showCreditCardForm = false;
+
+  /// Initializes the state of the widget.
+  ///
+  /// Sets up initial state for the order form. TODO: Pre-fill user details if available.
 
   @override
   void initState() {
@@ -46,15 +76,39 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
     // TODO: Pre-fill user details if available
   }
 
+  /// Processes and submits the order to Firestore.
+  ///
+  /// Validates the shipping and payment forms, simulates credit card payment if needed,
+  /// saves the order to Firestore, updates product quantities, clears the cart, and
+  /// shows a confirmation dialog.
+  ///
+  /// Parameters:
+  ///   - context: The [BuildContext] for accessing providers and showing dialogs.
+
   Future<void> _placeOrder(BuildContext context) async {
     if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    // Validate credit card details if selected
+    if (_selectedPaymentMethod == 'Credit Card' &&
+        !_creditCardFormKey.currentState!.validate()) {
       return;
     }
 
     final authService = Provider.of<AuthService>(context, listen: false);
     final cartService = CartService(authService.currentUser!.uid);
 
+    setState(() {
+      _showCreditCardForm = false; // Reset form visibility
+    });
+
     try {
+      // Simulate credit card payment processing
+      if (_selectedPaymentMethod == 'Credit Card') {
+        await _simulateCreditCardPayment();
+      }
+
       // Create order document
       final orderRef = FirebaseFirestore.instance.collection('orders').doc();
 
@@ -96,6 +150,28 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
     }
   }
 
+  /// Simulates credit card payment processing with a delay.
+  ///
+  /// In a real application, this would integrate with a payment gateway.
+  ///
+  /// Returns:
+  ///   A [Future] that completes after a simulated delay.
+
+  Future<void> _simulateCreditCardPayment() async {
+    // Simulate a delay to mimic payment processing
+    await Future.delayed(const Duration(seconds: 2));
+    // For dummy payment, assume success if form is valid
+    // In a real app, integrate with a payment gateway here
+  }
+
+  /// Updates the quantities of products in Firestore based on the order.
+  ///
+  /// Uses a transaction to deduct the ordered quantities from the product stock.
+  /// Throws an exception if the product does not exist or has insufficient stock.
+  ///
+  /// Parameters:
+  ///   - cartItems: The list of [CartItem] objects in the order.
+
   Future<void> _updateProductQuantities(List<CartItem> cartItems) async {
     final firestore = FirebaseFirestore.instance;
 
@@ -124,6 +200,14 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
     }
   }
 
+  /// Shows a dialog confirming the successful order placement.
+  ///
+  /// Provides options to view orders or continue shopping, navigating to the
+  /// appropriate screens.
+  ///
+  /// Parameters:
+  ///   - orderId: The ID of the placed order.
+
   Future<void> _showOrderConfirmationDialog(String orderId) async {
     return showDialog<void>(
       context: context,
@@ -134,7 +218,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Your order has been placed successfully.'),
+                const Text('Your order has been placed successfully.'),
                 Text('Order ID: $orderId'),
               ],
             ),
@@ -143,9 +227,15 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
             TextButton(
               child: const Text('View Orders'),
               onPressed: () {
-                // TODO: Navigate to order history
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        const ConsumerHomeScreen(initialIndex: 2), // Orders tab
+                  ),
+                );
               },
             ),
             TextButton(
@@ -159,6 +249,17 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
       },
     );
   }
+
+  /// Builds the UI for the order placement screen.
+  ///
+  /// Displays a form with order summary, shipping details, delivery options, payment
+  /// methods, and an optional credit card form. Includes a button to submit the order.
+  ///
+  /// Parameters:
+  ///   - context: The [BuildContext] for building the widget.
+  ///
+  /// Returns:
+  ///   A [Widget] representing the order placement screen UI.
 
   @override
   Widget build(BuildContext context) {
@@ -316,7 +417,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                           if (value == null || value.isEmpty) {
                             return 'Please enter pin code';
                           }
-                          if (value.length != 6) {
+                          if (value.length != 5) {
                             return 'Please enter a valid 6-digit pin code';
                           }
                           return null;
@@ -376,9 +477,110 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                   onChanged: (value) {
                     setState(() {
                       _selectedPaymentMethod = value!;
+                      _showCreditCardForm = value == 'Credit Card';
                     });
                   },
                 ),
+
+                // Credit Card Form
+                if (_showCreditCardForm) ...[
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Credit Card Details',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Form(
+                    key: _creditCardFormKey,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: _cardNumberController,
+                          decoration: const InputDecoration(
+                            labelText: 'Card Number',
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.credit_card),
+                          ),
+                          keyboardType: TextInputType.number,
+                          maxLength: 16,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter card number';
+                            }
+                            if (value.length != 16) {
+                              return 'Card number must be 16 digits';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _expiryDateController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Expiry Date (MM/YY)',
+                                  border: OutlineInputBorder(),
+                                ),
+                                keyboardType: TextInputType.datetime,
+                                maxLength: 5,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter expiry date';
+                                  }
+                                  final regex =
+                                      RegExp(r'^(0[1-9]|1[0-2])\/[0-9]{2}$');
+                                  if (!regex.hasMatch(value)) {
+                                    return 'Enter valid date (MM/YY)';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _cvvController,
+                                decoration: const InputDecoration(
+                                  labelText: 'CVV',
+                                  border: OutlineInputBorder(),
+                                ),
+                                keyboardType: TextInputType.number,
+                                maxLength: 3,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter CVV';
+                                  }
+                                  if (value.length != 3) {
+                                    return 'CVV must be 3 digits';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _cardHolderController,
+                          decoration: const InputDecoration(
+                            labelText: 'Cardholder Name',
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter cardholder name';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
 
                 // Place Order Button
                 const SizedBox(height: 24),
@@ -393,6 +595,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -404,6 +607,10 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
     );
   }
 
+  /// Disposes of all text controllers to free up resources.
+  ///
+  /// Called when the widget is removed from the widget tree.
+
   @override
   void dispose() {
     // Clean up controllers
@@ -412,6 +619,10 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
     _addressController.dispose();
     _cityController.dispose();
     _pinCodeController.dispose();
+    _cardNumberController.dispose();
+    _expiryDateController.dispose();
+    _cvvController.dispose();
+    _cardHolderController.dispose();
     super.dispose();
   }
 }
