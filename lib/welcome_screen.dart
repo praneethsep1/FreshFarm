@@ -3,8 +3,24 @@ import 'package:flutter/material.dart';
 
 import 'login_screen.dart';
 
+/// A stateless widget that displays the app's welcome screen.
+///
+/// Provides an introduction to the app with options to navigate to the login
+/// or registration screens.
+
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
+
+  /// Builds the UI for the welcome screen.
+  ///
+  /// Displays a background image with a darkened overlay, app branding, and buttons
+  /// to navigate to [LoginScreen] or [RegisterScreen].
+  ///
+  /// Parameters:
+  ///   - context: The [BuildContext] for building the widget.
+  ///
+  /// Returns:
+  ///   A [Widget] representing the welcome screen UI.
 
   @override
   Widget build(BuildContext context) {
