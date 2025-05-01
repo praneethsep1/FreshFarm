@@ -5,8 +5,25 @@ import '../authentication.dart';
 import '../models.dart';
 import 'add_product_screen.dart';
 
+/// A stateless widget that displays a list of products managed by the logged-in farmer.
+///
+/// Fetches products from [ProductRepository] and allows adding, editing, or deleting
+/// products. Displays a list of products with an option to add new ones.
+
 class FarmerProductManagement extends StatelessWidget {
   const FarmerProductManagement({super.key});
+
+  /// Builds the UI for the farmer product management screen.
+  ///
+  /// Displays a loading indicator, an empty state with an add product button, or a
+  /// list of products with options to edit or delete them. Includes a button to add
+  /// new products.
+  ///
+  /// Parameters:
+  ///   - context: The [BuildContext] for building the widget and accessing providers.
+  ///
+  /// Returns:
+  ///   A [Widget] representing the product management screen UI.
 
   @override
   Widget build(BuildContext context) {

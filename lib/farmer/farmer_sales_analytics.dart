@@ -5,8 +5,24 @@ import 'package:fl_chart/fl_chart.dart'; // Add this for charts
 import '../authentication.dart';
 import '../models.dart';
 
+/// A stateless widget that displays sales analytics for the logged-in farmer.
+///
+/// Shows total revenue, top-selling products, and a chart of order trends over
+/// the last 30 days, using data from Firestore orders.
+
 class FarmerSalesAnalytics extends StatelessWidget {
   const FarmerSalesAnalytics({super.key});
+
+  /// Builds the UI for the farmer sales analytics screen.
+  ///
+  /// Displays cards for total revenue, top-selling products, and a line chart for
+  /// order trends, based on completed orders for the farmer.
+  ///
+  /// Parameters:
+  ///   - context: The [BuildContext] for building the widget and accessing providers.
+  ///
+  /// Returns:
+  ///   A [Widget] representing the sales analytics screen UI.
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +47,17 @@ class FarmerSalesAnalytics extends StatelessWidget {
       ),
     );
   }
+
+  /// Builds a card displaying the farmer's total revenue from completed orders.
+  ///
+  /// Calculates revenue by summing the price of items sold by the farmer in
+  /// completed orders from Firestore.
+  ///
+  /// Parameters:
+  ///   - farmerId: The ID of the farmer to filter orders.
+  ///
+  /// Returns:
+  ///   A [Widget] representing the total revenue card.
 
   Widget _buildTotalRevenueCard(String farmerId) {
     return StreamBuilder<QuerySnapshot>(
@@ -83,6 +110,17 @@ class FarmerSalesAnalytics extends StatelessWidget {
       },
     );
   }
+
+  /// Builds a card displaying the top-selling products for the farmer.
+  ///
+  /// Aggregates sales data from completed orders in Firestore and lists up to
+  /// five products by quantity sold, including revenue.
+  ///
+  /// Parameters:
+  ///   - farmerId: The ID of the farmer to filter orders.
+  ///
+  /// Returns:
+  ///   A [Widget] representing the top products card.
 
   Widget _buildTopProductsCard(String farmerId) {
     return StreamBuilder<QuerySnapshot>(
@@ -147,6 +185,17 @@ class FarmerSalesAnalytics extends StatelessWidget {
       },
     );
   }
+
+  /// Builds a line chart showing order revenue trends over the last 30 days.
+  ///
+  /// Aggregates daily revenue from completed orders in Firestore and displays it
+  /// in a line chart using [fl_chart].
+  ///
+  /// Parameters:
+  ///   - farmerId: The ID of the farmer to filter orders.
+  ///
+  /// Returns:
+  ///   A [Widget] representing the order trends chart card.
 
   Widget _buildOrderTrendsChart(String farmerId) {
     return StreamBuilder<QuerySnapshot>(

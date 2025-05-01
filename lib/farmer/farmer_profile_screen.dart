@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../authentication.dart';
-import '../models.dart';
-import '../welcome_screen.dart'; // Assuming UserModel and UserType are defined here
+import '../help_screen.dart';
+import '../welcome_screen.dart';
+
+/// A stateful widget that allows farmers to view and edit their profile information.
+///
+/// Displays a form with fields for full name, email, phone number, address, farm
+/// name, and farm location. Supports saving profile updates and logging out.
 
 class FarmerProfileScreen extends StatefulWidget {
   const FarmerProfileScreen({super.key});
@@ -10,6 +15,11 @@ class FarmerProfileScreen extends StatefulWidget {
   @override
   _FarmerProfileScreenState createState() => _FarmerProfileScreenState();
 }
+
+/// The state class for [FarmerProfileScreen].
+///
+/// Manages the state of the profile form, including text controllers, loading state,
+/// and user data. Handles fetching, updating, and saving the farmer's profile.
 
 class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
   final _formKey = GlobalKey<FormState>();
@@ -24,12 +34,21 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
   UserModel? _userModel;
   bool _isLoading = true;
 
+  /// Initializes the state of the widget.
+  ///
+  /// Sets up text controllers and fetches the farmer's profile data.
+
   @override
   void initState() {
     super.initState();
     _initializeControllers();
     _fetchUserProfile();
   }
+
+  /// Initializes text controllers for the profile form fields.
+  ///
+  /// Sets up controllers for full name, email, phone number, address, farm name,
+  /// and farm location.
 
   void _initializeControllers() {
     _fullNameController = TextEditingController();
@@ -40,12 +59,16 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
     _farmLocationController = TextEditingController();
   }
 
+  /// Fetches the farmer's profile data from [AuthService].
+  ///
+  /// Updates the [_userModel] and populates text controllers with the fetched data.
+  /// Displays an error snackbar if the fetch fails.
+
   void _fetchUserProfile() async {
     final authService = Provider.of<AuthService>(context, listen: false);
 
     try {
-      final user = await authService
-          .fetchUserProfile(); // Assuming this returns UserModel
+      final user = await authService.fetchUserProfile();
       setState(() {
         _userModel = user;
         _fullNameController.text = user?.fullName ?? '';
@@ -66,6 +89,11 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
     }
   }
 
+  /// Saves the updated profile data to [AuthService].
+  ///
+  /// Validates the form, creates an updated [UserModel], and saves it. Displays a
+  /// snackbar for success or error feedback.
+
   void _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -76,15 +104,14 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
         uid: _userModel!.uid,
         email: _userModel!.email,
         fullName: _fullNameController.text,
-        userType: _userModel!.userType, // Preserve the original userType
+        userType: _userModel!.userType,
         phoneNumber: _phoneNumberController.text,
         address: _addressController.text,
         farmName: _farmNameController.text,
         farmLocation: _farmLocationController.text,
       );
 
-      await authService
-          .updateUserProfile(updatedUser); // Assuming this accepts UserModel
+      await authService.updateUserProfile(updatedUser);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Profile updated successfully')),
@@ -95,6 +122,10 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
       );
     }
   }
+
+  /// Logs the farmer out and navigates to the [WelcomeScreen].
+  ///
+  /// Calls [AuthService.signOut] and clears the navigation stack.
 
   void _logout() async {
     final authService = Provider.of<AuthService>(context, listen: false);
@@ -107,12 +138,32 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
     }
   }
 
+  /// Builds the UI for the farmer profile screen.
+  ///
+  /// Displays a loading indicator or a form with profile fields, a save button,
+  /// and options for help and logout. Includes a profile avatar placeholder.
+  ///
+  /// Parameters:
+  ///   - context: The [BuildContext] for building the widget.
+  ///
+  /// Returns:
+  ///   A [Widget] representing the profile screen UI.
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Profile'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HelpScreen()),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: _logout,
@@ -128,7 +179,6 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Profile Picture Placeholder
                     Center(
                       child: CircleAvatar(
                         radius: 60,
@@ -141,8 +191,6 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-
-                    // Full Name
                     TextFormField(
                       controller: _fullNameController,
                       decoration: const InputDecoration(
@@ -158,8 +206,6 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-
-                    // Email (read-only)
                     TextFormField(
                       controller: _emailController,
                       decoration: const InputDecoration(
@@ -169,10 +215,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                       ),
                       readOnly: true,
                     ),
-
                     const SizedBox(height: 16),
-
-                    // Phone Number
                     TextFormField(
                       controller: _phoneNumberController,
                       decoration: const InputDecoration(
@@ -192,8 +235,22 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-
-                    // Farm Name
+                    TextFormField(
+                      controller: _addressController,
+                      decoration: const InputDecoration(
+                        labelText: 'Address',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.home),
+                      ),
+                      maxLines: 3,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your address';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
                     TextFormField(
                       controller: _farmNameController,
                       decoration: const InputDecoration(
@@ -209,8 +266,6 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-
-                    // Farm Location
                     TextFormField(
                       controller: _farmLocationController,
                       decoration: const InputDecoration(
@@ -226,8 +281,6 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                       },
                     ),
                     const SizedBox(height: 24),
-
-                    // Save Profile Button
                     ElevatedButton(
                       onPressed: _saveProfile,
                       style: ElevatedButton.styleFrom(
@@ -239,6 +292,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -248,6 +302,10 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
             ),
     );
   }
+
+  /// Disposes of text controllers to free up resources.
+  ///
+  /// Called when the widget is removed from the widget tree.
 
   @override
   void dispose() {
