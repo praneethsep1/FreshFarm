@@ -1,6 +1,6 @@
 # FarmFresh
-App Release: https://github.com/praneethsep1/FreshFarm/releases
-Documentation URL: https://farm-fresh-1.web.app
+- **App Release:** https://github.com/praneethsep1/FreshFarm/releases
+- **Documentation URL:** https://farm-fresh-1.web.app
 
 ## Project Description
 
