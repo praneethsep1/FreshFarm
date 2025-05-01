@@ -1,4 +1,5 @@
 # FarmFresh
+URL: https://farm-fresh-1.web.app
 
 ## Project Description
 
@@ -41,7 +42,7 @@ FarmFresh follows a client-server architecture with Flutter as the front-end and
 ### Setup Steps
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/your-username/farmfresh.git
+   git clone https://github.com/praneethsep1/FreshFarm.git
    cd farmfresh
    ```
 
